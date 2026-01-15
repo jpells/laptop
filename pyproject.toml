@@ -1,0 +1,36 @@
+[project]
+name = "laptop"
+version = "0.0.1"
+description = "Ansible playbook for automating laptop setup"
+requires-python = ">=3.14"
+dependencies = [
+    "ansible>=13.2.0",
+    "ansible-lint>=26.1.0",
+    "pre-commit>=4.5.1",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+extra_checks = true
+check_untyped_defs = true
+local_partial_types = true
+no_implicit_optional = true
+# Require type annotations
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+# Disallow 'Any' types
+disallow_any_unimported = true
+disallow_any_explicit = true
+disallow_any_decorated = true
+disallow_subclassing_any = true
+# Warnings
+warn_return_any = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_unused_ignores = true
+warn_no_return = true

@@ -1,0 +1,4 @@
+# Ansible Lint Configuration
+# See: https://ansible.readthedocs.io/projects/lint/configuring/
+
+profile: production

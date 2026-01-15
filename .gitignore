@@ -1,0 +1,5 @@
+# UV
+.venv
+
+# Claude
+.claude/settings.local.json

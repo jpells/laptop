@@ -1,0 +1,25 @@
+---
+- name: Ensure backup directory exists
+  ansible.builtin.file:
+    path: "{{ laptop_backup_dir }}"
+    state: directory
+    mode: "0755"
+  tags:
+    - restore
+
+- name: Generate restore script from template
+  ansible.builtin.template:
+    src: restore.sh.j2
+    dest: "{{ laptop_backup_dir }}/restore.sh"
+    mode: "0755"
+  tags:
+    - restore
+
+- name: Restore from NAS
+  ansible.builtin.command:
+    cmd: "{{ laptop_backup_dir }}/restore.sh"
+  register: laptop_restore_result
+  changed_when: "'Restore completed successfully' in laptop_restore_result.stdout"
+  tags:
+    - never
+    - restore

@@ -1,0 +1,55 @@
+---
+- name: Ensure dotfile parent directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - ~/.ssh
+    - ~/.config
+    - ~/.config/pip
+    - ~/.config/nvim
+    - ~/.config/nvim/lua
+  tags:
+    - dotfiles
+
+- name: Copy dotfiles
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/laptop/files/dotfiles/{{ item }}"
+    dest: "~/.{{ item }}"
+    mode: "0644"
+  loop:
+    - zshrc
+    - vimrc
+    - ssh/config
+    - gitignore
+    - config/pip/pip.conf
+    - config/starship.toml
+    - config/nvim/init.lua
+    - config/nvim/lua/plugins.lua
+  tags:
+    - dotfiles
+
+- name: Template gitconfig
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: ~/.gitconfig
+    mode: "0644"
+  tags:
+    - dotfiles
+
+- name: Ensure VSCode User directory exists
+  ansible.builtin.file:
+    path: ~/Library/Application Support/Code/User
+    state: directory
+    mode: "0755"
+  tags:
+    - dotfiles
+
+- name: Copy VSCode settings
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/laptop/files/vscode/settings.json"
+    dest: ~/Library/Application Support/Code/User/settings.json
+    mode: "0644"
+  tags:
+    - dotfiles

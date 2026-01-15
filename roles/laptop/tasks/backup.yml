@@ -1,0 +1,35 @@
+---
+- name: Ensure backup directory exists
+  ansible.builtin.file:
+    path: "{{ laptop_backup_dir }}"
+    state: directory
+    mode: "0755"
+  tags:
+    - backup
+
+- name: Create backup symlinks
+  ansible.builtin.file:
+    src: "{{ item.src }}"
+    path: "{{ laptop_backup_dir }}/{{ item.name }}"
+    state: link
+    force: true
+  loop: "{{ laptop_backup_items }}"
+  tags:
+    - backup
+
+- name: Generate backup script from template
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: "{{ laptop_backup_dir }}/backup.sh"
+    mode: "0755"
+  tags:
+    - backup
+
+- name: Configure backup cron job
+  ansible.builtin.cron:
+    name: "{{ laptop_backup_cron_name }}"
+    minute: "{{ laptop_backup_cron_minute }}"
+    hour: "{{ laptop_backup_cron_hour }}"
+    job: "{{ laptop_backup_cron_job }}"
+  tags:
+    - backup

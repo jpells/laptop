@@ -1,0 +1,36 @@
+" Plugin management (vim-plug)
+call plug#begin('~/.vim/plugged')
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+call plug#end()
+
+" Appearance
+colorscheme dracula
+syntax on
+set number
+set cursorline
+
+" Indentation
+set autoindent
+set smartindent
+set expandtab
+set tabstop=2
+set shiftwidth=2
+filetype plugin indent on
+
+" Clipboard
+set clipboard=unnamed
+
+" Mouse
+set mouse=a
+
+" Undo
+set undofile
+
+" FZF mappings
+nnoremap <leader>f :Files<cr>
+nnoremap <leader>g :Rg<cr>
+nnoremap <leader>b :Buffers<cr>
+nnoremap <leader>h :History<cr>
+nnoremap <leader>/ :BLines<cr>

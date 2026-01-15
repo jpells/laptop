@@ -1,0 +1,315 @@
+---
+# ==============================================================================
+# PROFILE CONFIGURATION
+# ==============================================================================
+# Override with: -e laptop_profile=personal
+# - base: minimal setup for work machines
+# - personal: full setup including media apps and backup
+laptop_profile: base
+
+# ==============================================================================
+# HOMEBREW PACKAGES
+# ==============================================================================
+# Packages installed via `brew install`
+
+laptop_base_homebrew_packages:
+  # Shell & Prompt
+  - starship
+  - zsh-autosuggestions
+  - zsh-completions
+  - zsh-syntax-highlighting
+
+  # CLI Replacements (modern alternatives to unix tools)
+  - bat                # cat with syntax highlighting
+  - btop               # top with better UI
+  - eza                # ls with git integration
+  - fd                 # find with better UX
+  - ncdu               # du with interactive UI
+  - ripgrep            # grep, faster
+  - zoxide             # cd with frecency
+
+  # Shell Tools
+  - atuin              # shell history with sync
+  - direnv             # per-directory environment variables
+  - fzf                # fuzzy finder
+  - thefuck            # command correction
+
+  # Git
+  - gh                 # GitHub CLI
+  - git
+  - git-delta          # git diff pager with syntax highlighting
+  - lazygit            # git TUI
+
+  # Dev Tools
+  - awscli
+  - go
+  - neovim
+  - postgresql
+  - uv                 # Python package manager (installed via bootstrap.sh)
+
+  # Mac CLI Utilities
+  - dockutil           # Dock management
+  - mas                # Mac App Store
+
+# Additional packages for personal profile
+laptop_personal_homebrew_packages:
+  - yt-dlp             # video downloader
+
+# ==============================================================================
+# HOMEBREW CASKS
+# ==============================================================================
+# GUI applications installed via `brew install --cask`
+
+laptop_base_homebrew_casks:
+  # Terminal
+  - iterm2
+
+  # Fonts
+  - font-jetbrains-mono-nerd-font
+  - font-ubuntu-mono-nerd-font
+
+  # Productivity
+  - adguard            # system-wide ad blocker
+  - maccy              # clipboard manager
+  - rectangle          # window management
+  - stats              # menu bar system stats
+
+  # Database
+  - beekeeper-studio
+
+  # Dev
+  - visual-studio-code
+
+# Additional casks for personal profile
+laptop_personal_homebrew_casks:
+  - plex               # media server client
+  - vlc                # media player
+
+# ==============================================================================
+# MAC APP STORE
+# ==============================================================================
+# Apps managed via `mas` CLI (requires App Store sign-in)
+
+# Apps to uninstall (bundled Apple apps)
+laptop_mas_uninstall:
+  - { id: 682658836, name: "GarageBand" }
+  - { id: 408981434, name: "iMovie" }
+  - { id: 409183694, name: "Keynote" }
+  - { id: 409203825, name: "Numbers" }
+  - { id: 409201541, name: "Pages" }
+
+laptop_base_mas_apps: []
+
+# Additional MAS apps for personal profile
+laptop_personal_mas_apps:
+  - { id: 1099568401, name: "Home Assistant" }
+  - { id: 1333542190, name: "1Password 7" }
+  - { id: 1475387142, name: "Tailscale" }
+  - { id: 1451685025, name: "WireGuard" }
+
+# ==============================================================================
+# DOCK CONFIGURATION
+# ==============================================================================
+# Managed via `dockutil` CLI
+
+# Apps to remove from Dock (default macOS apps)
+laptop_dock_remove:
+  - Launchpad
+  - TV
+  - Podcasts
+  - News
+  - Maps
+  - Freeform
+  - FaceTime
+  - Keynote
+  - Numbers
+  - Pages
+  - "App Store"
+  - Mail
+  - Calendar
+  - "System Settings"
+
+# Apps to add to Dock
+# Note: Finder is always at position 1 (managed by macOS)
+# pos: dock position (1-indexed, Finder=1)
+laptop_base_dock_apps:
+  - { name: "Safari", path: "/Applications/Safari.app", pos: 1 }
+  - { name: "Notes", path: "/System/Applications/Notes.app", pos: 4 }
+  - { name: "Visual Studio Code", path: "/Applications/Visual Studio Code.app", pos: 5 }
+  - { name: "iTerm", path: "/Applications/iTerm.app", pos: 6 }
+
+laptop_personal_dock_apps:
+  - { name: "Messages", path: "/System/Applications/Messages.app", pos: 2 }
+  - { name: "Gmail", path: "{{ ansible_facts.env.HOME }}/Applications/Gmail.app", pos: 3 }
+  - { name: "Music", path: "/System/Applications/Music.app", pos: 7 }
+  - { name: "Plex", path: "/Applications/Plex.app", pos: 8 }
+  - { name: "Home Assistant", path: "/Applications/Home Assistant.app", pos: 9 }
+
+# Folders to add to Dock (right side)
+# view: auto, fan, grid, list
+# display: folder, stack
+laptop_dock_folders:
+  - { path: "{{ ansible_facts.env.HOME }}/Downloads", view: "fan", display: "folder" }
+  - { path: "{{ ansible_facts.env.HOME }}/Projects", view: "fan", display: "folder" }
+
+# ==============================================================================
+# VSCODE EXTENSIONS
+# ==============================================================================
+# Extensions installed via `code --install-extension`
+
+laptop_vscode_extensions:
+  # Themes
+  - dracula-theme.theme-dracula
+
+  # Python
+  - ms-python.python          # Python language support with Pylance
+  - charliermarsh.ruff        # Python formatter and linter
+
+  # JavaScript/TypeScript
+  - biomejs.biome             # JS/TS/Vue/CSS formatter and linter
+
+# ==============================================================================
+# BACKUP CONFIGURATION (personal profile only)
+# ==============================================================================
+# Automated rsync backup to NAS over SMB
+
+# Local backup staging directory (symlinks to actual locations)
+laptop_backup_dir: "{{ ansible_facts.env.HOME }}/backup"
+
+# SMB mount point for NAS share
+laptop_backup_mount_point: "{{ ansible_facts.env.HOME }}/NetBackup"
+
+# Git configuration
+# Required env vars: GIT_USER_NAME, GIT_USER_EMAIL
+laptop_git_user_name: "{{ lookup('env', 'GIT_USER_NAME') }}"
+laptop_git_user_email: "{{ lookup('env', 'GIT_USER_EMAIL') }}"
+
+# NAS connection
+# Required env vars: BACKUP_RSYNC_HOST, BACKUP_RSYNC_USER, BACKUP_RSYNC_PASS
+laptop_backup_rsync_host: "{{ lookup('env', 'BACKUP_RSYNC_HOST') }}"
+laptop_backup_rsync_user: "{{ lookup('env', 'BACKUP_RSYNC_USER') }}"
+laptop_backup_rsync_pass: "{{ lookup('env', 'BACKUP_RSYNC_PASS') }}"
+laptop_backup_share: "//{{ laptop_backup_rsync_user }}:{{ laptop_backup_rsync_pass }}@{{ laptop_backup_rsync_host }}/NetBackup"
+
+# Hostname used in backup path on NAS
+laptop_backup_host_name: "dreamingMYdreams"
+
+# Cron schedule for automated backups
+laptop_backup_cron_name: "rsync backup"
+laptop_backup_cron_minute: "0"
+laptop_backup_cron_hour: "*/6"           # every 6 hours
+laptop_backup_cron_job: "/bin/bash {{ laptop_backup_dir }}/backup.sh > {{ laptop_backup_dir }}/backup.log 2>&1"
+
+# Rsync exclude patterns
+laptop_backup_rsync_excludes:
+  - .venv
+  - __pycache__
+  - .pytest_cache
+  - .mypy_cache
+  - .ruff_cache
+  - .coverage
+  - .terraform
+  - .DS_Store
+
+# Items to backup
+# is_dir: true for directories, false for files
+# mode: directory permissions for restore (optional)
+# file_mode: file permissions for restore (optional)
+laptop_backup_items:
+  - name: ".ssh"
+    src: "{{ ansible_facts.env.HOME }}/.ssh"
+    dest: "{{ ansible_facts.env.HOME }}/.ssh"
+    is_dir: true
+    mode: "700"
+    file_mode: "600"
+  - name: "VPN"
+    src: "{{ ansible_facts.env.HOME }}/VPN"
+    dest: "{{ ansible_facts.env.HOME }}/VPN"
+    is_dir: true
+    mode: "700"
+    file_mode: "600"
+  - name: ".aws"
+    src: "{{ ansible_facts.env.HOME }}/.aws"
+    dest: "{{ ansible_facts.env.HOME }}/.aws"
+    is_dir: true
+    mode: "700"
+    file_mode: "600"
+  - name: "Desktop"
+    src: "{{ ansible_facts.env.HOME }}/Desktop"
+    dest: "{{ ansible_facts.env.HOME }}/Desktop"
+    is_dir: true
+  - name: "Downloads"
+    src: "{{ ansible_facts.env.HOME }}/Downloads"
+    dest: "{{ ansible_facts.env.HOME }}/Downloads"
+    is_dir: true
+  - name: "Music Library.musiclibrary"
+    src: "{{ ansible_facts.env.HOME }}/Music/Music Library.musiclibrary"
+    dest: "{{ ansible_facts.env.HOME }}/Music"
+    is_dir: false
+  - name: "Projects"
+    src: "{{ ansible_facts.env.HOME }}/Projects"
+    dest: "{{ ansible_facts.env.HOME }}/Projects"
+    is_dir: true
+
+# ==============================================================================
+# MACOS DEFAULTS - DOCK BEHAVIOR
+# ==============================================================================
+# Settings applied via `defaults write com.apple.dock`
+
+# Auto-hide the Dock (macOS default: false)
+laptop_dock_autohide: true
+
+# Minimize windows into their application icon (macOS default: false)
+laptop_dock_minimize_to_application: true
+
+# Dock icon size in pixels (macOS default: 48)
+laptop_dock_tilesize: 32
+
+# Show recent applications in Dock (macOS default: true)
+laptop_dock_show_recents: false
+
+# ==============================================================================
+# MACOS DEFAULTS - FINDER
+# ==============================================================================
+# Settings applied via `defaults write com.apple.finder`
+
+# Show hidden files (files starting with .) (macOS default: false)
+laptop_finder_show_all_files: true
+
+# Show all filename extensions (macOS default: false)
+laptop_finder_show_extensions: true
+
+# Default Finder view style
+# Options: clmv=column, Nlsv=list, icnv=icon, glyv=gallery
+laptop_finder_view_style: "clmv"
+
+# Show path bar at bottom of Finder windows (macOS default: false)
+laptop_finder_show_path_bar: true
+
+# Show status bar at bottom of Finder windows (macOS default: false)
+laptop_finder_show_status_bar: true
+
+# Show ~/Library folder (hidden by default on macOS)
+laptop_finder_show_library: true
+
+# ==============================================================================
+# MACOS DEFAULTS - SYSTEM UI
+# ==============================================================================
+
+# System appearance: "Dark" or "Light"
+laptop_interface_style: "Dark"
+
+# ==============================================================================
+# MACOS DEFAULTS - SPOTLIGHT
+# ==============================================================================
+
+# Apps/folders to exclude from Spotlight indexing (Spotlight Privacy list)
+laptop_spotlight_exclusions:
+  - /Applications/1Password.app
+
+# ==============================================================================
+# MACOS DEFAULTS - SAFARI
+# ==============================================================================
+
+# Show Develop menu in Safari menu bar (macOS default: false)
+laptop_safari_develop_menu: true

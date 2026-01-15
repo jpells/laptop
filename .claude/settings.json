@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run:pre-commit:*)",
+      "Bash(uv run:ansible-lint:*)",
+      "Bash(uv run:ansible-playbook:*:--check)",
+      "Bash(uv run:ansible-playbook:*:--diff)",
+      "Bash(uv run:ansible-playbook:*:--syntax-check)",
+      "Bash(uv run:ansible-playbook:*:--list-tasks)",
+      "Bash(git:status)",
+      "Bash(git:diff:*)",
+      "Bash(git:log:*)",
+      "Bash(git:branch:*)",
+      "Bash(git:show:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

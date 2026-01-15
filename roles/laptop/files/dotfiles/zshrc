@@ -1,0 +1,98 @@
+# =============================================================================
+# PATH & Environment
+# =============================================================================
+
+export PATH=${PATH}:$HOME/go/bin
+
+export EDITOR="nvim"
+
+# =============================================================================
+# LESS Configuration
+# =============================================================================
+
+export LESS='-F -X -i -M --incsearch --jump-target=4'
+
+# Colored man pages
+export LESS_TERMCAP_mb="$(printf '%b' '\e[1;31m')"     # begin bold (red)
+export LESS_TERMCAP_md="$(printf '%b' '\e[1;36m')"     # begin blink (cyan)
+export LESS_TERMCAP_me="$(printf '%b' '\e[0m')"        # reset
+export LESS_TERMCAP_so="$(printf '%b' '\e[01;44;33m')" # begin standout (yellow on blue)
+export LESS_TERMCAP_se="$(printf '%b' '\e[0m')"        # end standout
+export LESS_TERMCAP_us="$(printf '%b' '\e[1;32m')"     # begin underline (green)
+export LESS_TERMCAP_ue="$(printf '%b' '\e[0m')"        # end underline
+
+# =============================================================================
+# Tool Initialization
+# =============================================================================
+
+eval "$(starship init zsh)"    # Prompt
+eval "$(direnv hook zsh)"      # Per-directory environments
+eval "$(thefuck --alias)"      # Command correction
+eval "$(zoxide init zsh)"      # Smart cd
+eval "$(atuin init zsh)"       # Better shell history
+
+# Fuzzy finder
+eval "$(fzf --zsh)"
+export FZF_DEFAULT_OPTS="--preview='bat -p --color=always {}'"
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'  # use fd for better performance
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# iTerm2 shell integration
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# =============================================================================
+# Aliases (interactive shells only, disabled for Claude Code)
+# =============================================================================
+
+if [[ $- == *i* ]] && [[ -z "$CLAUDE_CODE_ENV" ]]; then
+    alias rm='trash'
+    alias mkdir='mkdir -p'
+    alias cd='z'
+    alias ls='eza --group-directories-first --icons --hyperlink'
+    alias grep='rg'
+    alias cat='bat'
+    alias du='ncdu'
+    alias find='fd'
+    alias top='btop'
+    alias vi='vim'
+    alias vim='nvim'
+fi
+
+# =============================================================================
+# Zsh Plugins (installed via Homebrew)
+# =============================================================================
+
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# =============================================================================
+# Completions
+# =============================================================================
+
+zmodload zsh/complist
+
+if type brew &>/dev/null; then
+    FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+fi
+
+autoload -Uz compinit
+compinit
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+
+# Enable menu selection with arrow keys
+zstyle ':completion:*' menu select
+
+# Colorize completion menu (matches file types like ls)
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33
+
+# =============================================================================
+# Shell Options
+# =============================================================================
+
+setopt numeric_glob_sort      # Sort file1, file2, file10 numerically
+setopt interactivecomments    # Allow # comments in interactive shell
+setopt auto_menu              # Auto-show completion menu
+setopt auto_param_slash       # Add trailing slash to directories
+setopt extended_glob          # Advanced glob patterns (^, ~, #, **)

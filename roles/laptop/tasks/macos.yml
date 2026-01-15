@@ -1,0 +1,149 @@
+---
+# Dock Behavior Settings
+- name: Enable Dock autohide
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: autohide
+    type: bool
+    value: "{{ laptop_dock_autohide }}"
+  notify: Restart Dock
+  tags:
+    - macos
+
+- name: Minimize windows into application icon
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: minimize-to-application
+    type: bool
+    value: "{{ laptop_dock_minimize_to_application }}"
+  notify: Restart Dock
+  tags:
+    - macos
+
+- name: Set Dock icon size
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: tilesize
+    type: float
+    value: "{{ laptop_dock_tilesize }}"
+  notify: Restart Dock
+  tags:
+    - macos
+
+- name: Hide recent applications in Dock
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: show-recents
+    type: bool
+    value: "{{ laptop_dock_show_recents }}"
+  notify: Restart Dock
+  tags:
+    - macos
+
+# Finder Settings
+- name: Show hidden files in Finder
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleShowAllFiles
+    type: bool
+    value: "{{ laptop_finder_show_all_files }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Show all filename extensions
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleShowAllExtensions
+    type: bool
+    value: "{{ laptop_finder_show_extensions }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Set Finder default view style
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXPreferredViewStyle
+    type: string
+    value: "{{ laptop_finder_view_style }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Show Finder path bar
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: ShowPathbar
+    type: bool
+    value: "{{ laptop_finder_show_path_bar }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Show Finder status bar
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: ShowStatusBar
+    type: bool
+    value: "{{ laptop_finder_show_status_bar }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Check if Library folder is hidden
+  ansible.builtin.stat:
+    path: "{{ ansible_facts.env.HOME }}/Library"
+  register: laptop_library_stat
+  when: laptop_finder_show_library
+  tags:
+    - macos
+
+- name: Show Library folder in home directory
+  ansible.builtin.command:
+    cmd: chflags nohidden {{ ansible_facts.env.HOME }}/Library
+  when:
+    - laptop_finder_show_library
+    - laptop_library_stat.stat.hidden | default(false)
+  changed_when: true
+  notify: Restart Finder
+  tags:
+    - macos
+
+# System UI Settings
+- name: Set interface style (Dark/Light mode)
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleInterfaceStyle
+    type: string
+    value: "{{ laptop_interface_style }}"
+  tags:
+    - macos
+
+# Spotlight Settings
+- name: Add paths to Spotlight privacy exclusions
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      current=$(/usr/libexec/PlistBuddy -c "Print :Exclusions" ~/Library/Preferences/com.apple.Spotlight.plist 2>/dev/null || echo "")
+      if ! echo "$current" | grep -q "{{ item }}"; then
+        defaults write com.apple.Spotlight Exclusions -array-add '{"path"="{{ item }}";}'
+        echo "added"
+      else
+        echo "exists"
+      fi
+  loop: "{{ laptop_spotlight_exclusions }}"
+  register: laptop_spotlight_result
+  changed_when: "'added' in laptop_spotlight_result.stdout"
+  tags:
+    - macos
+
+# Safari Settings
+- name: Enable Safari Develop menu
+  community.general.osx_defaults:
+    path: ~/Library/Preferences/com.apple.Safari.plist
+    key: IncludeDevelopMenu
+    type: bool
+    value: "{{ laptop_safari_develop_menu }}"
+  tags:
+    - macos

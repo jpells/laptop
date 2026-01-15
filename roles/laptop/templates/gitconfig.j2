@@ -1,0 +1,47 @@
+[user]
+	name = {{ laptop_git_user_name }}
+	email = {{ laptop_git_user_email }}
+
+[core]
+	excludesFile = ~/.gitignore
+	pager = delta
+
+[delta]
+	dark = true
+	hyperlinks = true
+	hyperlinks-file-link-format = vscode://file/{path}:{line}
+	line-numbers = true
+	navigate = true
+	side-by-side = true
+	syntax-theme = Dracula
+
+[diff]
+	algorithm = histogram
+	colorMoved = true
+
+[fetch]
+	prune = true
+
+[help]
+	autocorrect = immediate
+
+[interactive]
+	diffFilter = delta --color-only
+
+[log]
+	follow = true
+
+[merge]
+	conflictstyle = zdiff3
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rebase]
+	updateRefs = true
+
+[rerere]
+	enabled = true

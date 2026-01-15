@@ -1,0 +1,31 @@
+---
+- name: Build MAS apps list
+  ansible.builtin.set_fact:
+    laptop_mas_apps: >-
+      {{ laptop_base_mas_apps + (laptop_personal_mas_apps if laptop_profile == 'personal' else []) }}
+  tags:
+    - mas
+
+- name: List installed MAS apps
+  ansible.builtin.command: mas list
+  register: laptop_mas_installed
+  changed_when: false
+  tags:
+    - mas
+
+- name: Uninstall unwanted MAS apps
+  ansible.builtin.command: "mas uninstall {{ item.id }}"
+  loop: "{{ laptop_mas_uninstall }}"
+  when: (item.id | string) in laptop_mas_installed.stdout
+  changed_when: true
+  become: true
+  tags:
+    - mas
+
+- name: Install MAS apps
+  ansible.builtin.command: "mas install {{ item.id }}"
+  loop: "{{ laptop_mas_apps }}"
+  when: (item.id | string) not in laptop_mas_installed.stdout
+  changed_when: true
+  tags:
+    - mas

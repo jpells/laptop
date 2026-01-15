@@ -1,0 +1,54 @@
+---
+- name: Build homebrew packages list
+  ansible.builtin.set_fact:
+    laptop_homebrew_packages: >-
+      {{ laptop_base_homebrew_packages + (laptop_personal_homebrew_packages if laptop_profile == 'personal' else []) }}
+  tags:
+    - homebrew
+
+- name: Build homebrew casks list
+  ansible.builtin.set_fact:
+    laptop_homebrew_casks: >-
+      {{ laptop_base_homebrew_casks + (laptop_personal_homebrew_casks if laptop_profile == 'personal' else []) }}
+  tags:
+    - homebrew
+
+- name: Check if Homebrew is installed
+  ansible.builtin.stat:
+    path: /opt/homebrew/bin/brew
+  register: laptop_homebrew_check
+  tags:
+    - homebrew
+
+- name: Install Homebrew
+  ansible.builtin.shell: |
+    set -o pipefail
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/bash
+  when: not laptop_homebrew_check.stat.exists
+  changed_when: true
+  tags:
+    - homebrew
+
+- name: Update Homebrew
+  community.general.homebrew:
+    update_homebrew: true
+  tags:
+    - homebrew
+
+- name: Install Homebrew packages
+  community.general.homebrew:
+    name: "{{ laptop_homebrew_packages }}"
+    state: present
+  when: laptop_homebrew_packages | length > 0
+  tags:
+    - homebrew
+
+- name: Install Homebrew cask packages
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ laptop_homebrew_casks }}"
+  tags:
+    - homebrew

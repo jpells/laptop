@@ -1,0 +1,96 @@
+---
+- name: Build dock apps list
+  ansible.builtin.set_fact:
+    laptop_dock_apps: >-
+      {{ laptop_base_dock_apps + (laptop_personal_dock_apps if laptop_profile == 'personal' else []) }}
+  tags:
+    - dock
+
+- name: Check if dock item exists (for removal)
+  ansible.builtin.command: "dockutil --find '{{ item }}'"
+  loop: "{{ laptop_dock_remove }}"
+  register: laptop_dock_remove_check
+  failed_when: false
+  changed_when: false
+  tags:
+    - dock
+
+- name: Remove dock items
+  ansible.builtin.command: "dockutil --remove '{{ item.item }}' --no-restart"
+  loop: "{{ laptop_dock_remove_check.results }}"
+  when: item.rc == 0
+  changed_when: true
+  notify: Restart Dock
+  tags:
+    - dock
+
+- name: Check if dock item exists (for adding)
+  ansible.builtin.command: "dockutil --find '{{ item.name }}'"
+  loop: "{{ laptop_dock_apps }}"
+  register: laptop_dock_add_check
+  failed_when: false
+  changed_when: false
+  tags:
+    - dock
+
+- name: Add dock items
+  ansible.builtin.command: "dockutil --add '{{ item.item.path }}' --label '{{ item.item.name }}' --no-restart"
+  loop: "{{ laptop_dock_add_check.results }}"
+  when: item.rc != 0
+  changed_when: true
+  notify: Restart Dock
+  tags:
+    - dock
+
+- name: Get current dock item positions
+  ansible.builtin.command: "dockutil --find '{{ item.name }}'"
+  loop: "{{ laptop_dock_apps }}"
+  register: laptop_dock_positions
+  failed_when: false
+  changed_when: false
+  tags:
+    - dock
+
+- name: Move dock items to correct position
+  ansible.builtin.command: "dockutil --move '{{ item.item.name }}' --position {{ item.item.pos }} --no-restart"
+  loop: "{{ laptop_dock_positions.results }}"
+  when:
+    - item.rc == 0
+    - item.item.pos is defined
+    - (item.stdout | regex_search('slot (\d+)') | regex_search('\d+') | int) != item.item.pos
+  changed_when: true
+  notify: Restart Dock
+  tags:
+    - dock
+
+- name: Ensure dock folders exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ laptop_dock_folders | default([]) }}"
+  tags:
+    - dock
+
+- name: Check if dock folder exists
+  ansible.builtin.command: "dockutil --find '{{ item.path | basename }}'"
+  loop: "{{ laptop_dock_folders | default([]) }}"
+  register: laptop_dock_folder_check
+  failed_when: false
+  changed_when: false
+  tags:
+    - dock
+
+- name: Add dock folders
+  ansible.builtin.command: >-
+    dockutil --add '{{ item.item.path }}'
+    --view {{ item.item.view | default('auto') }}
+    --display {{ item.item.display | default('stack') }}
+    --section others
+    --no-restart
+  loop: "{{ laptop_dock_folder_check.results }}"
+  when: item.rc != 0
+  changed_when: true
+  notify: Restart Dock
+  tags:
+    - dock

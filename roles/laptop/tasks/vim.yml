@@ -1,0 +1,30 @@
+---
+- name: Ensure vim autoload directory exists
+  ansible.builtin.file:
+    path: ~/.vim/autoload
+    state: directory
+    mode: "0755"
+  tags:
+    - vim
+
+- name: Install vim-plug
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    dest: ~/.vim/autoload/plug.vim
+    mode: "0644"
+  tags:
+    - vim
+
+- name: Install vim plugins
+  ansible.builtin.command: vim +PlugInstall +qall
+  args:
+    creates: ~/.vim/plugged/dracula
+  tags:
+    - vim
+
+- name: Install Neovim plugins via lazy.nvim
+  ansible.builtin.command: nvim --headless "+Lazy! sync" +qa
+  args:
+    creates: ~/.local/share/nvim/lazy/dracula
+  tags:
+    - vim

@@ -1,0 +1,26 @@
+---
+- name: Check if code CLI is available
+  ansible.builtin.command: which code
+  register: laptop_vscode_code_cli_check
+  changed_when: false
+  failed_when: false
+  tags:
+    - vscode
+
+- name: List installed VSCode extensions
+  ansible.builtin.command: code --list-extensions
+  register: laptop_vscode_installed
+  changed_when: false
+  when: laptop_vscode_code_cli_check.rc == 0
+  tags:
+    - vscode
+
+- name: Install VSCode extensions
+  ansible.builtin.command: "code --install-extension {{ item }}"
+  loop: "{{ laptop_vscode_extensions }}"
+  when:
+    - laptop_vscode_code_cli_check.rc == 0
+    - item not in laptop_vscode_installed.stdout_lines
+  changed_when: true
+  tags:
+    - vscode

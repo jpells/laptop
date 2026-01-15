@@ -1,0 +1,51 @@
+---
+- name: Remove existing JJ Terminal profile
+  ansible.builtin.command:
+    cmd: /usr/libexec/PlistBuddy -c "Delete ':Window Settings:JJ'" ~/Library/Preferences/com.apple.Terminal.plist
+  failed_when: false
+  changed_when: false
+  tags:
+    - terminal
+
+- name: Create JJ Terminal profile entry
+  ansible.builtin.command:
+    cmd: /usr/libexec/PlistBuddy -c "Add ':Window Settings:JJ' dict" ~/Library/Preferences/com.apple.Terminal.plist
+  changed_when: false
+  tags:
+    - terminal
+
+- name: Import Terminal profile settings
+  vars:
+    terminal_profile: "{{ playbook_dir }}/roles/laptop/files/JJ.terminal"
+    terminal_plist: ~/Library/Preferences/com.apple.Terminal.plist
+  ansible.builtin.command:
+    cmd: /usr/libexec/PlistBuddy -c "Merge '{{ terminal_profile }}' ':Window Settings:JJ'" {{ terminal_plist }}
+  changed_when: false
+  tags:
+    - terminal
+
+- name: Set default Terminal profile
+  community.general.osx_defaults:
+    domain: com.apple.Terminal
+    key: "Default Window Settings"
+    type: string
+    value: JJ
+  tags:
+    - terminal
+
+- name: Set startup Terminal profile
+  community.general.osx_defaults:
+    domain: com.apple.Terminal
+    key: "Startup Window Settings"
+    type: string
+    value: JJ
+  tags:
+    - terminal
+
+- name: Copy iTerm2 preferences
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/laptop/files/com.googlecode.iterm2.plist"
+    dest: ~/Library/Preferences/com.googlecode.iterm2.plist
+    mode: "0644"
+  tags:
+    - terminal

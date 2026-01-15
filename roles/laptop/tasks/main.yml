@@ -1,0 +1,51 @@
+---
+- name: Install Homebrew packages
+  ansible.builtin.import_tasks: homebrew.yml
+  tags:
+    - homebrew
+
+- name: Install Mac App Store apps
+  ansible.builtin.import_tasks: mas.yml
+  tags:
+    - mas
+
+- name: Configure dotfiles
+  ansible.builtin.import_tasks: dotfiles.yml
+  tags:
+    - dotfiles
+
+- name: Install utility scripts
+  ansible.builtin.import_tasks: scripts.yml
+  tags:
+    - scripts
+
+- name: Configure Vim
+  ansible.builtin.import_tasks: vim.yml
+  tags:
+    - vim
+
+- name: Configure VSCode extensions
+  ansible.builtin.import_tasks: vscode.yml
+  tags:
+    - vscode
+
+- name: Configure Terminal
+  ansible.builtin.import_tasks: terminal.yml
+  tags:
+    - terminal
+
+- name: Configure Dock
+  ansible.builtin.import_tasks: dock.yml
+  tags:
+    - dock
+
+- name: Configure macOS defaults
+  ansible.builtin.import_tasks: macos.yml
+  tags:
+    - macos
+
+- name: Configure backup cron job
+  ansible.builtin.include_tasks: backup.yml
+  when: laptop_profile == 'personal'
+  tags:
+    - backup

@@ -1,0 +1,9 @@
+Include ~/.ssh/hosts.local
+
+Host *
+  ServerAliveInterval 20
+  TCPKeepAlive yes
+  ControlMaster auto
+  ControlPath /tmp/%r@%h:%p
+  ControlPersist yes
+  IdentityFile ~/.ssh/id_rsa

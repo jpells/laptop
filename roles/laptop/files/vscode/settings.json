@@ -1,0 +1,92 @@
+{
+  "diffEditor.codeLens": true,
+  "editor.fontFamily": "UbuntuMono Nerd Font Mono",
+  "editor.fontSize": 14,
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.minimap.enabled": false,
+  "editor.rulers": [88, 120],
+  "editor.tabSize": 2,
+  "editor.trimAutoWhitespace": true,
+  "explorer.autoReveal": false,
+  "files.autoSave": "afterDelay",
+  "files.encoding": "utf8",
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.coverage": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true
+  },
+  "outline.showArrays": false,
+  "outline.showBooleans": false,
+  "outline.showConstants": false,
+  "outline.showEnumMembers": false,
+  "outline.showEnums": false,
+  "outline.showEvents": false,
+  "outline.showFields": false,
+  "outline.showFiles": false,
+  "outline.showInterfaces": false,
+  "outline.showKeys": false,
+  "outline.showModules": false,
+  "outline.showNamespaces": false,
+  "outline.showNull": false,
+  "outline.showNumbers": false,
+  "outline.showOperators": false,
+  "outline.showPackages": false,
+  "outline.showProperties": false,
+  "outline.showStrings": false,
+  "outline.showStructs": false,
+  "outline.showTypeParameters": false,
+  "outline.showVariables": false,
+  "terminal.integrated.fontSize": 14,
+  "workbench.colorTheme": "Dracula Theme",
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.list.openMode": "doubleClick",
+  "claudeCode.preferredLocation": "sidebar",
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.rulers": [88],
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    }
+  },
+  "python.analysis.typeCheckingMode": "basic",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.languageServer": "Pylance",
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  },
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  }
+}

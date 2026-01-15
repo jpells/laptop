@@ -1,0 +1,5 @@
+---
+- name: Configure laptop
+  hosts: localhost
+  roles:
+    - laptop
