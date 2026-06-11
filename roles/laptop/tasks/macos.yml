@@ -134,7 +134,7 @@
       fi
   loop: "{{ laptop_spotlight_exclusions }}"
   register: laptop_spotlight_result
-  changed_when: "'added' in laptop_spotlight_result.stdout"
+  changed_when: "laptop_spotlight_result.stdout == 'added'"
   tags:
     - macos
 

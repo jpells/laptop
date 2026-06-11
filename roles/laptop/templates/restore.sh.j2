@@ -48,7 +48,7 @@ if [ -{% if item.is_dir | default(false) %}d{% else %}e{% endif %} "$MOUNT_POINT
     chmod {{ item.mode }} "{{ item.dest }}"
 {% endif %}
 {% if item.file_mode is defined %}
-    chmod {{ item.file_mode }} "{{ item.dest }}"/* 2>/dev/null
+    find "{{ item.dest }}" -maxdepth 1 -type f -exec chmod {{ item.file_mode }} {} +
 {% endif %}
 {% else %}
     mkdir -p "{{ item.dest }}"
@@ -57,6 +57,14 @@ if [ -{% if item.is_dir | default(false) %}d{% else %}e{% endif %} "$MOUNT_POINT
 fi
 
 {% endfor %}
+# Fix git repo permissions (SMB doesn't preserve Unix permissions)
+echo "Fixing git repo permissions in ~/Projects..."
+for repo in ~/Projects/*/.git; do
+    repo_dir=$(dirname "$repo")
+    echo "Fixing permissions in $repo_dir..."
+    (cd "$repo_dir" && git diff --summary | sed -n 's/^ mode change 100644 => 100755 //p' | while IFS= read -r file; do chmod 644 "$file"; done)
+done
+
 # Unmount the NetBackup share
 /sbin/umount "$MOUNT_POINT"
 rmdir "$MOUNT_POINT" 2>/dev/null

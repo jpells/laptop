@@ -10,6 +10,11 @@ colorscheme dracula
 syntax on
 set number
 set cursorline
+set colorcolumn=88,120
+
+" Filetype-specific settings
+autocmd FileType python setlocal colorcolumn=88
+autocmd FileType gitcommit setlocal colorcolumn=72
 
 " Indentation
 set autoindent

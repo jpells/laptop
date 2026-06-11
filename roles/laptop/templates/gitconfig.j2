@@ -2,6 +2,9 @@
 	name = {{ laptop_git_user_name }}
 	email = {{ laptop_git_user_email }}
 
+[alias]
+	fixup = "!COMMIT_HASH=$(git log --pretty=oneline | fzf --no-preview | awk '{print $1}'); git commit --fixup $COMMIT_HASH; GIT_SEQUENCE_EDITOR=: git rebase --autostash --autosquash -i $COMMIT_HASH^"
+
 [core]
 	excludesFile = ~/.gitignore
 	pager = delta
@@ -41,6 +44,7 @@
 	autoSetupRemote = true
 
 [rebase]
+	autosquash = true
 	updateRefs = true
 
 [rerere]

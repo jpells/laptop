@@ -17,6 +17,22 @@ vim.cmd.colorscheme("dracula")
 vim.opt.number = true
 vim.opt.cursorline = true
 vim.opt.termguicolors = true
+vim.opt.colorcolumn = "88,120"
+
+-- Filetype-specific settings
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    vim.opt_local.colorcolumn = "88"
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "gitcommit",
+  callback = function()
+    vim.opt_local.colorcolumn = "72"
+  end,
+})
 
 -- Indentation
 vim.opt.autoindent = true

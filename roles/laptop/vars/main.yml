@@ -71,7 +71,6 @@ laptop_base_homebrew_casks:
   # Productivity
   - adguard            # system-wide ad blocker
   - maccy              # clipboard manager
-  - rectangle          # window management
   - stats              # menu bar system stats
 
   # Database
