@@ -233,6 +233,12 @@ laptop_backup_items:
     is_dir: true
     mode: "700"
     file_mode: "600"
+  - name: ".claude"
+    src: "{{ ansible_facts.env.HOME }}/.claude"
+    dest: "{{ ansible_facts.env.HOME }}/.claude"
+    is_dir: true
+    mode: "700"
+    file_mode: "600"
   - name: "Desktop"
     src: "{{ ansible_facts.env.HOME }}/Desktop"
     dest: "{{ ansible_facts.env.HOME }}/Desktop"
