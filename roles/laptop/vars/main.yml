@@ -248,8 +248,8 @@ laptop_backup_items:
     dest: "{{ ansible_facts.env.HOME }}/Downloads"
     is_dir: true
   - name: "Music Library.musiclibrary"
-    src: "{{ ansible_facts.env.HOME }}/Music/Music Library.musiclibrary"
-    dest: "{{ ansible_facts.env.HOME }}/Music"
+    src: "{{ ansible_facts.env.HOME }}/Music/Music/Music Library.musiclibrary"
+    dest: "{{ ansible_facts.env.HOME }}/Music/Music"
     is_dir: false
   - name: "Projects"
     src: "{{ ansible_facts.env.HOME }}/Projects"
