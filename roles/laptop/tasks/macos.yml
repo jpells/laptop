@@ -71,6 +71,35 @@
   tags:
     - macos
 
+- name: Set folder new Finder windows open to
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: NewWindowTarget
+    type: string
+    value: "{{ laptop_finder_new_window_target }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Set path for new Finder windows
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: NewWindowTargetPath
+    type: string
+    value: "{{ laptop_finder_new_window_target_path }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
+- name: Reset per-folder Finder view overrides
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/{{ item }}/.DS_Store"
+    state: absent
+  loop: "{{ laptop_finder_view_reset_folders }}"
+  notify: Restart Finder
+  tags:
+    - macos
+
 - name: Show Finder path bar
   community.general.osx_defaults:
     domain: com.apple.finder
@@ -111,12 +140,29 @@
     - macos
 
 # System UI Settings
-- name: Set interface style (Dark/Light mode)
+- name: Disable automatic Light/Dark appearance switching
   community.general.osx_defaults:
     domain: NSGlobalDomain
-    key: AppleInterfaceStyle
-    type: string
-    value: "{{ laptop_interface_style }}"
+    key: AppleInterfaceStyleSwitchesAutomatically
+    type: bool
+    value: false
+  tags:
+    - macos
+
+- name: Set interface style (Dark/Light mode)
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      current=$(osascript -e 'tell application "System Events" to tell appearance preferences to get dark mode')
+      desired="{{ 'true' if laptop_interface_style == 'Dark' else 'false' }}"
+      if [ "$current" != "$desired" ]; then
+        osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to $desired"
+        echo "changed"
+      else
+        echo "unchanged"
+      fi
+  register: laptop_interface_style_result
+  changed_when: "laptop_interface_style_result.stdout == 'changed'"
   tags:
     - macos
 
@@ -139,11 +185,41 @@
     - macos
 
 # Safari Settings
+# Safari has been sandboxed since Mojave: it reads its prefs from the
+# containerized plist below, not ~/Library/Preferences/com.apple.Safari.plist.
 - name: Enable Safari Develop menu
   community.general.osx_defaults:
-    path: ~/Library/Preferences/com.apple.Safari.plist
+    path: ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist
     key: IncludeDevelopMenu
     type: bool
     value: "{{ laptop_safari_develop_menu }}"
+  tags:
+    - macos
+
+- name: Show Safari bookmarks bar
+  community.general.osx_defaults:
+    path: ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist
+    key: ShowFavoritesBar
+    type: bool
+    value: "{{ laptop_safari_show_bookmarks_bar }}"
+  tags:
+    - macos
+
+# TextEdit Settings
+- name: Set TextEdit default format to plain text
+  community.general.osx_defaults:
+    domain: com.apple.TextEdit
+    key: RichText
+    type: bool
+    value: "{{ laptop_textedit_rich_text }}"
+  tags:
+    - macos
+
+- name: Open untitled document at launch instead of Open panel
+  community.general.osx_defaults:
+    domain: com.apple.TextEdit
+    key: NSShowAppCentricOpenPanelInsteadOfUntitledFile
+    type: bool
+    value: "{{ laptop_textedit_show_open_panel }}"
   tags:
     - macos

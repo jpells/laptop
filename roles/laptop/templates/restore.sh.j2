@@ -8,6 +8,7 @@
 MOUNT_POINT="{{ laptop_backup_mount_point }}"
 SHARE="{{ laptop_backup_share }}"
 HOST_NAME="{{ laptop_backup_host_name }}"
+LOG_FILE="{{ laptop_backup_dir }}/restore.log"
 RSYNC_OPTIONS=(
     --archive
     --copy-links
@@ -36,6 +37,7 @@ if [ ! -d "$MOUNT_POINT/$HOST_NAME" ]; then
 fi
 
 echo "Restoring backup from NAS..."
+: > "$LOG_FILE"
 
 {% for item in laptop_backup_items %}
 # Restore {{ item.name }}
@@ -43,7 +45,7 @@ if [ -{% if item.is_dir | default(false) %}d{% else %}e{% endif %} "$MOUNT_POINT
     echo "Restoring {{ item.name }}..."
 {% if item.is_dir | default(false) %}
     mkdir -p "{{ item.dest }}"
-    rsync "${RSYNC_OPTIONS[@]}" "$MOUNT_POINT/$HOST_NAME/{{ item.name }}/" "{{ item.dest }}/"
+    rsync "${RSYNC_OPTIONS[@]}" "$MOUNT_POINT/$HOST_NAME/{{ item.name }}/" "{{ item.dest }}/" >> "$LOG_FILE" 2>&1
 {% if item.mode is defined %}
     chmod {{ item.mode }} "{{ item.dest }}"
 {% endif %}
@@ -52,7 +54,7 @@ if [ -{% if item.is_dir | default(false) %}d{% else %}e{% endif %} "$MOUNT_POINT
 {% endif %}
 {% else %}
     mkdir -p "{{ item.dest }}"
-    rsync "${RSYNC_OPTIONS[@]}" "$MOUNT_POINT/$HOST_NAME/{{ item.name }}" "{{ item.dest }}/"
+    rsync "${RSYNC_OPTIONS[@]}" "$MOUNT_POINT/$HOST_NAME/{{ item.name }}" "{{ item.dest }}/" >> "$LOG_FILE" 2>&1
 {% endif %}
 fi
 
@@ -70,5 +72,6 @@ done
 rmdir "$MOUNT_POINT" 2>/dev/null
 
 echo "Restore completed successfully."
+echo "Restore log: $LOG_FILE"
 echo "You can now run: ansible-playbook laptop.yml --tags backup"
 exit 0

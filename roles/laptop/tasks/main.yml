@@ -49,3 +49,9 @@
   when: laptop_profile == 'personal'
   tags:
     - backup
+
+- name: Configure restore
+  ansible.builtin.include_tasks: restore.yml
+  when: laptop_profile == 'personal'
+  tags:
+    - restore

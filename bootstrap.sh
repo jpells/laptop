@@ -7,7 +7,7 @@ echo "==> Bootstrapping laptop setup..."
 # Step 1: Install Homebrew if not present
 if ! command -v brew &> /dev/null; then
     echo "==> Installing Homebrew..."
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
     # Evaluate Homebrew environment for Apple Silicon
     if [[ $(uname -m) == "arm64" ]]; then

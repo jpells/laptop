@@ -191,7 +191,7 @@ laptop_backup_rsync_pass: "{{ lookup('env', 'BACKUP_RSYNC_PASS') }}"
 laptop_backup_share: "//{{ laptop_backup_rsync_user }}:{{ laptop_backup_rsync_pass }}@{{ laptop_backup_rsync_host }}/NetBackup"
 
 # Hostname used in backup path on NAS
-laptop_backup_host_name: "dreamingMYdreams"
+laptop_backup_host_name: "justMYimagination"
 
 # Cron schedule for automated backups
 laptop_backup_cron_name: "rsync backup"
@@ -288,6 +288,21 @@ laptop_finder_show_extensions: true
 # Options: clmv=column, Nlsv=list, icnv=icon, glyv=gallery
 laptop_finder_view_style: "clmv"
 
+# Folder new Finder windows open to
+# Options: PfHm=home, PfDe=desktop, PfDo=documents, PfCu=other (see NewWindowTargetPath)
+laptop_finder_new_window_target: "PfHm"
+laptop_finder_new_window_target_path: "file://{{ ansible_facts.env.HOME }}/"
+
+# Home-relative folders whose per-folder view override (.DS_Store) gets reset,
+# so they fall back to laptop_finder_view_style instead of a stale saved view
+laptop_finder_view_reset_folders:
+  - Downloads
+  - Documents
+  - Desktop
+  - Movies
+  - Music
+  - Pictures
+
 # Show path bar at bottom of Finder windows (macOS default: false)
 laptop_finder_show_path_bar: true
 
@@ -318,3 +333,16 @@ laptop_spotlight_exclusions:
 
 # Show Develop menu in Safari menu bar (macOS default: false)
 laptop_safari_develop_menu: true
+
+# Show bookmarks (favorites) bar in Safari (macOS default: false)
+laptop_safari_show_bookmarks_bar: true
+
+# ==============================================================================
+# MACOS DEFAULTS - TEXTEDIT
+# ==============================================================================
+
+# Default new documents to plain text instead of rich text (macOS default: true)
+laptop_textedit_rich_text: false
+
+# Open a new untitled document at launch instead of the Open panel (macOS default: true)
+laptop_textedit_show_open_panel: false

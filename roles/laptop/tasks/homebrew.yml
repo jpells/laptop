@@ -52,3 +52,23 @@
   loop: "{{ laptop_homebrew_casks }}"
   tags:
     - homebrew
+
+# Homebrew makes its prefix group-writable so any admin user can `brew
+# install` without sudo, but zsh's compinit treats group-writable dirs in
+# fpath as insecure and prompts on every shell start. Strip the write bit
+# so compinit stays quiet.
+- name: Find insecure zsh completion directories
+  ansible.builtin.command: zsh -ic 'autoload -Uz compaudit; compaudit'
+  register: laptop_compaudit
+  changed_when: false
+  failed_when: false
+  tags:
+    - homebrew
+
+- name: Fix insecure zsh completion directory permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: go-w
+  loop: "{{ laptop_compaudit.stdout_lines }}"
+  tags:
+    - homebrew

@@ -32,9 +32,6 @@ Ansible playbook for automating macOS laptop setup. Configures a complete develo
 # Install Ansible and dependencies
 uv sync
 
-# Install pre-commit hooks
-uv run pre-commit install
-
 # Set git identity (used by gitconfig template)
 export GIT_USER_NAME="Your Name"
 export GIT_USER_EMAIL="you@example.com"
@@ -76,6 +73,15 @@ Time Machine provides full system backups and complements the automated rsync ba
 - `~/backup` - Already backed up via automated rsync
 - `~/Library/Caches` - Optional, saves space
 - `~/.cache` - Optional, saves space
+
+### Battery Charge Limit
+
+On Apple Silicon MacBooks running macOS Tahoe 26.4+, you can cap charging below 100% to slow battery aging. This is backed by the SMC, not a `defaults` key, so it can't be automated via Ansible.
+
+**Setup:**
+1. Open System Settings → Battery → Charging
+2. Click the ⓘ next to Charging
+3. Choose a charge limit (e.g. 80%)
 
 ### Wallpaper Rotation (personal profile)
 
@@ -192,6 +198,12 @@ roles/laptop/
 ```
 
 ## Development
+
+### Pre-commit Hooks
+
+```bash
+uv run pre-commit install
+```
 
 ### Linting
 
