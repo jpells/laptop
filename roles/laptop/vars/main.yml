@@ -53,6 +53,7 @@ laptop_base_homebrew_packages:
 
 # Additional packages for personal profile
 laptop_personal_homebrew_packages:
+  - node               # JavaScript runtime, bundles npm
   - yt-dlp             # video downloader
 
 # ==============================================================================

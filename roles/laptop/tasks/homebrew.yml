@@ -53,6 +53,13 @@
   tags:
     - homebrew
 
+- name: Start postgresql service at login
+  community.general.homebrew_services:
+    name: postgresql
+    state: present
+  tags:
+    - homebrew
+
 # Homebrew makes its prefix group-writable so any admin user can `brew
 # install` without sudo, but zsh's compinit treats group-writable dirs in
 # fpath as insecure and prompts on every shell start. Strip the write bit
