@@ -1,0 +1,38 @@
+---
+# Desktop widgets and Notification Center panel widgets aren't exposed via
+# `defaults write` or any supported CLI - they're stored as NSKeyedArchiver
+# blobs in the `widgets` key of NotificationCenter's sandboxed prefs. The
+# layout is captured (arranged by hand, then exported) rather than built from
+# declared values, since widgets like Weather and News embed a private,
+# opaque Intents configuration blob.
+- name: Read current Notification Center widget layout
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      defaults export "{{ laptop_notificationcenter_plist }}" - \
+        | plutil -extract widgets xml1 -o - -
+  register: laptop_widgets_current
+  changed_when: false
+  failed_when: false
+  tags:
+    - widgets
+
+- name: Read desired Notification Center widget layout
+  ansible.builtin.command:
+    cmd: plutil -extract widgets xml1 -o - "{{ laptop_widgets_file }}"
+  register: laptop_widgets_desired
+  changed_when: false
+  tags:
+    - widgets
+
+# NotificationCenter runs as a KeepAlive launch agent and owns this file
+# while running, so it must be written through cfprefsd (`defaults import`)
+# rather than copied directly.
+- name: Import Notification Center widget layout
+  ansible.builtin.command:
+    cmd: defaults import "{{ laptop_notificationcenter_plist }}" "{{ laptop_widgets_file }}"
+  when: laptop_widgets_current.stdout != laptop_widgets_desired.stdout
+  changed_when: true
+  notify: Restart Notification Center
+  tags:
+    - widgets
