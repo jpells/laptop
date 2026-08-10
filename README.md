@@ -14,6 +14,7 @@ Ansible playbook for automating macOS laptop setup. Configures a complete develo
 - **Sets up terminal** profiles for Terminal.app and iTerm2
 - **Arranges the Dock** with preferred apps
 - **Applies macOS defaults** for system preferences
+- **Restores desktop and Notification Center widgets** from a captured layout
 - **Configures automated backup** to NAS via rsync (personal profile)
 
 ## Prerequisites
@@ -94,6 +95,34 @@ Configure macOS to automatically rotate through wallpapers in a folder at specif
 4. Click the "Add Folder" button and select `~/Wallpapers`
 5. Enable "Change picture" and set your preferred interval (e.g., every 30 minutes, hourly, daily)
 
+### Desktop & Notification Center Widgets
+
+Widget placement (desktop widgets, and the widgets shown in the panel opened
+by clicking the menu-bar date/time) has no `defaults` key or supported CLI.
+It's stored as opaque `NSKeyedArchiver` data in NotificationCenter's prefs, so
+`roles/laptop/files/notificationcenter-widgets.plist` is a **captured**
+snapshot of a manually-arranged layout, not a declarative list — the playbook
+replays it via `defaults import`, then restarts NotificationCenter to pick it
+up.
+
+**Known limitations:**
+- Desktop placement is keyed by display resolution. On a machine with a
+  different display or scaling, widgets restore but may not land in the exact
+  same position.
+- Changing which widgets appear means rearranging them by hand and
+  re-capturing, not editing a variable.
+
+**To change the widget layout:**
+1. Arrange widgets on the desktop (right-click desktop → Edit Widgets) and in
+   the Notification Center panel (click the date/time → Edit Widgets) as
+   desired.
+2. Re-capture:
+   ```bash
+   NC_PLIST=~/Library/Containers/com.apple.notificationcenterui/Data/Library/Preferences/com.apple.notificationcenterui.plist
+   defaults export "$NC_PLIST" - > roles/laptop/files/notificationcenter-widgets.plist
+   plutil -remove last-analytics-stamp roles/laptop/files/notificationcenter-widgets.plist
+   ```
+
 ### Backup & Restore (personal profile)
 
 Both backup and restore require NAS connection environment variables:
@@ -144,6 +173,7 @@ uv run ansible-playbook laptop.yml --check
 | `terminal` | Terminal configuration |
 | `dock` | Dock arrangement |
 | `macos` | macOS system defaults |
+| `widgets` | Restore desktop and Notification Center widgets |
 | `backup` | Configure backup cron job |
 | `restore` | Restore from NAS backup |
 
@@ -179,6 +209,7 @@ roles/laptop/
 │   ├── terminal.yml           # Terminal profiles
 │   ├── dock.yml               # Dock configuration
 │   ├── macos.yml              # macOS defaults
+│   ├── widgets.yml            # Desktop/Notification Center widgets
 │   ├── backup.yml             # Backup cron job (personal)
 │   └── restore.yml            # Restore from backup
 ├── vars/
@@ -188,13 +219,14 @@ roles/laptop/
 │   ├── scripts/               # Utility scripts (synology-cloudsync-decrypt)
 │   ├── vscode/                # VSCode settings
 │   ├── JJ.terminal            # Terminal.app profile
-│   └── com.googlecode.iterm2.plist  # iTerm2 preferences
+│   ├── com.googlecode.iterm2.plist  # iTerm2 preferences
+│   └── notificationcenter-widgets.plist  # Captured widget layout
 ├── templates/
 │   ├── gitconfig.j2           # Git config template
 │   ├── backup.sh.j2           # Backup script
 │   └── restore.sh.j2          # Restore script
 └── handlers/
-    └── main.yml               # Restart Dock, Restart Finder
+    └── main.yml               # Restart Dock, Restart Finder, Restart Notification Center
 ```
 
 ## Development

@@ -347,3 +347,13 @@ laptop_textedit_rich_text: false
 
 # Open a new untitled document at launch instead of the Open panel (macOS default: true)
 laptop_textedit_show_open_panel: false
+
+# ==============================================================================
+# WIDGETS
+# ==============================================================================
+# Desktop widgets and Notification Center panel widgets, captured from a
+# manually-arranged layout (see roles/laptop/tasks/widgets.yml)
+
+laptop_notificationcenter_container: "{{ ansible_facts.env.HOME }}/Library/Containers/com.apple.notificationcenterui/Data"
+laptop_notificationcenter_plist: "{{ laptop_notificationcenter_container }}/Library/Preferences/com.apple.notificationcenterui.plist"
+laptop_widgets_file: "{{ playbook_dir }}/roles/laptop/files/notificationcenter-widgets.plist"

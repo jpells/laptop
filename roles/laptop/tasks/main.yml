@@ -44,6 +44,11 @@
   tags:
     - macos
 
+- name: Configure widgets
+  ansible.builtin.import_tasks: widgets.yml
+  tags:
+    - widgets
+
 - name: Configure backup cron job
   ansible.builtin.include_tasks: backup.yml
   when: laptop_profile == 'personal'

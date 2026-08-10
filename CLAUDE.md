@@ -46,6 +46,7 @@ Single role (`laptop`) with task files organized by function:
 | terminal.yml | terminal | Terminal.app and iTerm2 configuration |
 | dock.yml | dock | Dock app arrangement |
 | macos.yml | macos | macOS system defaults |
+| widgets.yml | widgets | Desktop and Notification Center widget layout |
 | backup.yml | backup | Backup cron job (personal profile only) |
 | restore.yml | restore | Restore from NAS backup |
 
