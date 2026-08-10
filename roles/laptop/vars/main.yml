@@ -313,6 +313,10 @@ laptop_finder_show_status_bar: true
 # Show ~/Library folder (hidden by default on macOS)
 laptop_finder_show_library: true
 
+# Keep desktop icons arranged by this attribute (macOS default: none)
+# Options: name, kind, dateModified, dateCreated, dateLastOpened, dateAdded, size, tags
+laptop_desktop_arrange_by: "name"
+
 # ==============================================================================
 # MACOS DEFAULTS - SYSTEM UI
 # ==============================================================================

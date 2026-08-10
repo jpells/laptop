@@ -139,6 +139,29 @@
   tags:
     - macos
 
+- name: Keep desktop icons arranged by name
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      plist="{{ ansible_facts.env.HOME }}/Library/Preferences/com.apple.finder.plist"
+      current=$(/usr/libexec/PlistBuddy -c "Print :DesktopViewSettings:IconViewSettings:arrangeBy" "$plist" 2>/dev/null || echo "")
+      if [ "$current" = "{{ laptop_desktop_arrange_by }}" ]; then
+        echo "unchanged"
+      else
+        /usr/libexec/PlistBuddy \
+          -c "Add :DesktopViewSettings dict" \
+          -c "Add :DesktopViewSettings:IconViewSettings dict" \
+          -c "Delete :DesktopViewSettings:IconViewSettings:arrangeBy" \
+          "$plist" 2>/dev/null
+        /usr/libexec/PlistBuddy -c "Add :DesktopViewSettings:IconViewSettings:arrangeBy string {{ laptop_desktop_arrange_by }}" "$plist"
+        echo "changed"
+      fi
+  register: laptop_desktop_arrange_result
+  changed_when: "laptop_desktop_arrange_result.stdout == 'changed'"
+  notify: Restart Finder
+  tags:
+    - macos
+
 # System UI Settings
 - name: Disable automatic Light/Dark appearance switching
   community.general.osx_defaults:
