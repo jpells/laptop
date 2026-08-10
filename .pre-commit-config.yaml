@@ -14,6 +14,9 @@ repos:
     rev: v26.1.0
     hooks:
       - id: ansible-lint
+        # upstream only adds ansible-core, which lacks community.general;
+        # pull the full ansible metapackage to match pyproject.toml
+        additional_dependencies: [ansible>=13.2.0]
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1
